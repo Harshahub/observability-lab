@@ -1,0 +1,38 @@
+---
+- name: Deploy OpenTelemetry Collector
+  hosts: targets
+  become: yes
+
+  tasks:
+
+    - name: Create OTel configuration directory
+      ansible.builtin.file:
+        path: /etc/otelcol
+        state: directory
+        mode: '0755'
+
+    - name: Create observability directory
+      ansible.builtin.file:
+        path: /opt/observability
+        state: directory
+        mode: '0755'
+
+    - name: Copy OTel configuration
+      ansible.builtin.copy:
+        src: ../otel/otel-config.yaml
+        dest: /etc/otelcol/otel-config.yaml
+        mode: '0644'
+
+    - name: Create deployment information file
+      ansible.builtin.copy:
+        content: |
+          Application: Observability Lab
+          Environment: AWS
+          Managed by: Ansible
+          Configuration: OpenTelemetry Collector
+        dest: /opt/observability/deployment.txt
+        mode: '0644'
+
+    - name: Display deployment message
+      ansible.builtin.debug:
+        msg: "Observability configuration deployed successfully"
